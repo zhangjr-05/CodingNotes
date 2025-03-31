@@ -1,0 +1,89 @@
+# DataFrame 二维表格
+import pandas as pd
+import numpy as np
+
+# 创建DataFrame对象     index 行索引  columns 列索引
+df = pd.DataFrame(data=None, index=None, columnns=None, dtype=None, copy=False)
+
+# from dict     key为列名，值为列数据
+df = pd.DataFrame({'name': ['张三', '李四', '王五'], 'age': [20, 21, 22]})
+df = pd.DataFrame([{'a': 1, 'b': 2}, {'a': 4, 'b': 5, 'c': 6}])
+# from ndarray
+ndarray_data = np.array([['张三', 20], ['李四', 21], ['王五', 22]])
+df = pd.DataFrame(ndarray_data, columns=['name', 'age'])
+# from list of list     外行内列
+df = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]], columns=['a', 'b', 'c'])
+# from Series
+s1 = pd.Series(['张三', '李四', '王五'])
+s2 = pd.Series([20, 21, 22])
+df = pd.DataFrame({'name': s1, 'age': s2})
+
+# 方法
+df.head()   # 返回前n行，默认5
+df.tail()
+df.info()   # 返回信息
+df.describe()
+df.sort_values(by='age', ascending=True)   # 按年龄排序
+df.shape
+df.columns  # 返回列名
+df.index    # 返回行索引
+df.mean()   # 求平均值
+df.sum()    # 求和
+df.dropna()
+df.fillna()
+df.isnull()
+df.notnull()
+df[['name', 'age']] # 选择指定列
+df.loc[0]   # 按标签索引选择数据
+df.loc[:, 'name']   # 选择列
+df.iloc[0:2]  # 按位置索引选择数据
+df.at[0, 'name']    # 按标签索引返回单个元素
+df.iat[0, 'age']
+df.apply(func=None)
+df.pivot_table()    # 创建透视表    ???
+df.merge()  # 合并多个DataFrame     ???
+df.query()  # 使用SQL风格的语法查询 DataFrame
+df.duplicated() # 返回布尔值DataFrame，指示每行是否是重复的
+df.drop_duplicates()    # 删除重复的行
+df.set_index()  # 设置DataFrame的索引
+df.reset_index()    # 重置DataFrame的索引
+df.transpose()  # 转置DataFrame
+df.to_csv()
+df.to_excel()
+df.to_json()
+df.to_sql()
+
+df.replace('old_value', 'new_value')    # 替换
+
+# 修改列名
+df.rename(columns={'name': '名字', 'age': '年龄'}, inplace=True)
+df.columns = ['姓名', '年龄']   # 修改所有
+# 修改行名
+df.rename(index={0: 'zero'}, inplace=True)
+
+# 按行或按列连接多个DataFrame
+# df.concat()   按行
+df1 = df2 = pd.DataFrame()
+df = pd.concat([df1, df2], ingore_index=True)
+# df.merge()    按列，列名不重复
+df = pd.merge(df1, df2, on='Column1')
+
+
+# 删除元素  df.drop()
+df.drop('Column1', axis=1)  # 删除列
+df.drop(0)  # 删除索引为0行
+
+# 计算相关性
+df[['年龄', '薪水']].corr(method='pearson')   # 计算相关性（Pearson相关系数）
+# method='spearman' 斯皮尔曼等级相关系数
+
+
+# 数据排序与聚合
+df.sort_values(by='薪水', ascending=True)   # 按薪水升序排列
+df.sort_index(axis=0)   # 根据行或列的索引进行排序
+
+# 按照某列（工作）进行分组后，应用聚合函数
+df.groupby(by='年龄')['薪水'].mean()
+df.groupby(by='工作').agg({'薪水':['mean', 'sum']})
+
+df.groupby(by='工作').apply(lambda x: x.sort_values(by='薪水', ascending=False))

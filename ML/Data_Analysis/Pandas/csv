@@ -1,0 +1,8 @@
+import pandas as pd
+
+# 读取csv文件加载为DataFrame
+df = pd.read_csv('d:/mypython/files/salaries.csv', sep=',', header=0, names=['姓名', '年龄', '工作', '薪水'])
+print(df.to_string())   # 用于返回DataFrame类型的数据
+
+# 将DataFrame写入csv文件
+df.to_csv('d:/mypython/files/salaries.csv', index=False, header=True, columns=['姓名', '年龄', '工作', '薪水'], mode='a')

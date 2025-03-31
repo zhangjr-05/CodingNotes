@@ -1,0 +1,22 @@
+def shell_sort(arr: list[int]):
+    '''
+    时间复杂度: O(n log n) ~ O(n²)
+    空间复杂度: O(1)
+    稳定性: 不稳定
+    间隔序列的插入排序 逐渐减小间隔直到为1
+    先将间隔较大的元素排序 再对间隔较小的元素排序
+    '''
+    n = len(arr)
+    gap = n // 2  # 初始间隔
+    while gap > 0:  # 逐渐缩小间隔
+        # 对每个分组进行插入排序
+        for i in range(gap, n):
+            temp = arr[i]
+            # 在已排序部分寻找插入位置
+            j = i
+            while j >= gap and arr[j - gap] > temp:
+                arr[j] = arr[j - gap]
+                j -= gap
+            arr[j] = temp
+        gap //= 2
+    return arr

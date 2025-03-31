@@ -1,0 +1,5 @@
+import random
+
+random.random() # 生成[0, 1)随机数
+
+random.seed()   # ???

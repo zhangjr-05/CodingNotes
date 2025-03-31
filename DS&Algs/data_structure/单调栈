@@ -1,0 +1,25 @@
+# 高牛看矮牛
+cows = [10, 3, 7, 4, 12, 2]
+stack = []
+ans = 0
+for i in range(len(cows)):
+    while stack and cows[stack[-1]] <= cows[i]:
+        stack.pop()
+    ans += len(stack)   # 栈中的牛都能看到当前牛
+    stack.append(i)
+
+print(ans)
+
+
+# 每日温度
+temperatures = [73,74,75,71,69,72,76,73]
+n = len(temperatures)
+ans = [0] * n
+st = []
+for i, t in enumerate(temperatures):
+    while st and t > temperatures[st[-1]]:
+        j = st.pop()
+        ans[j] = i - j
+    st.append(i)
+
+print(ans)

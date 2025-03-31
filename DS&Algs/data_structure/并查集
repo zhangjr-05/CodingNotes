@@ -1,0 +1,67 @@
+# DisjointSetUnion 并查集
+
+class Dsu:
+    def __init__(self, n):
+        """
+        初始化并查集 每个元素都是一个独立的集合
+        n -> 元素的数量
+        """
+        # 存储父节点 初始时每个元素父节点为自身
+        self.parent = list(range(n))
+        # 存储每个集合的秩 (树的高度)
+        self.rank = [0] * n
+        # 存储每个集合的大小
+        self.size = [1] * n
+        # 记录集合数量
+        self.count = n
+
+    def find(self, x):
+        """
+        查找元素 x 所属集合的代表(根节点) 并进行路径压缩优化
+        """
+        if self.parent[x] != x:
+            # 路径压缩  将 x 的父节点直接指向根节点
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+    
+    def union(self, x, y):
+        """
+        将包含元素 x 和元素 y 的集合合并为一个集合  并进行按秩合并优化
+        """
+        root_x = self.find(x)
+        root_y = self.find(y)
+        if root_x != root_y:
+            # 按秩排序
+            if self.rank[root_x] < self.rank[root_y]:
+                self.parent[root_x] = root_y
+                self.size[root_y] += self.size[root_x]
+            elif self.rank[root_x] > self.rank[root_y]:
+                self.parent[root_y] = root_x
+                self.size[root_x] += self.size[root_y]
+            else:
+                self.parent[root_y] = root_x
+                self.rank[root_x] += 1
+                self.size[root_x] += self.size[root_y]
+            self.count -= 1
+
+    def is_connected(self, x, y):
+        """
+        判断 x 与 y 是否属于同一个集合
+        """
+        return self.find(x) == self.find(y)
+    
+    def get_count(self):
+        """
+        获取当前集合数量
+        """
+        return self.count
+    
+    def get_size(self, x):
+        """
+        获取包含元素 x 的集合的大小
+        """
+        return self.size[self.find(x)]
+    
+if __name__ == '__main__':
+    dsu = Dsu(10)   # 创建一个包含10个元素的并查集
+    

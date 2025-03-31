@@ -1,0 +1,63 @@
+# Series    一维数组
+import pandas as pd
+import numpy as np
+
+# 创建Series对象，指定名称为'A'，默认索引为0, 1, 2, 3
+s = pd.Series([1, 2, 3, 4], name='A')
+s = pd.Series(np.array([1, 2, 3, 4]))   # 只能为一维ndarray
+s = pd.Series({'a': 1, 'b': 2, 'c': 3, 'd': 4}) # 字典转Series
+custom_index = [1, 2, 3, 4] # 自定义索引
+series_with_index = pd.Series([1, 2, 3, 4], index=custom_index, name='A')
+
+pd.Series(data=None, index=None, dtype=None, name=None, copy=False)
+# data  数据部分，可以是列表，数组，字典，标量值等
+# index 索引部分，可以是列表，数组，索引对象等
+# dtype 指定数据类型
+# name  名称
+# copy  是否复制数据
+# fastpath  是否启动快速路径
+
+
+# 扩充与删减
+s1 = pd.Series([1, 2, 3])
+s2 = pd.Series([4, 5, 6])
+s1.append(s2)   # 扩充
+s1.drop(index=1)    # 删除
+
+
+# 运算
+s = s * 2   # 所有元素乘以2
+s = s[s > 2]    # 筛选大于2的元素
+s > 2   # 返回一个bool Series
+
+
+# 方法
+s.index
+s.values    # 返回Series数据部分(以NumPy数组形式)
+s.head()    # 返回Series的前n行，默认5
+s.tail()
+s.dtype
+s.shape
+s.to_list() # 转换为python列表
+s.to_frame()    # 转换为DataFrame
+s.describe()    # 统计描述
+s.isnull()  # 返回bool的Series，表示每个元素是否为NaN
+s.notnull()
+s.unique()  # 返回Series中的唯一值
+s.value_counts()
+s.map(func=None)    # 将指定函数应用于Series中每个元素
+s.apply(func=None)  # 自定义
+s.astype(dtype=None)    # 转换类型
+s.sort_values() # 对元素值进行排序
+s.sort_index()  # 对索引进行排序
+s.dropna()  # 删除缺失值NaN
+s.fillna(value=1)   # 填充缺失值
+s.replace(to_replace=1, value=2)    # 替换
+s.cumsum()  # 返回累计求和
+s.cumprod() # 返回累计乘积
+s.shift(perieds=None)  # 将元素按指定步数位移   ???
+s.rank()    # 返回元素排名
+s.corr(other=None)  # 计算与另一个Series的相关性
+s.cov(other=None)   # 计算与另一个Series的协方差
+s.iloc[1]   # 通过位置索引来选择数据
+s.loc[1]    # 通过标签索引来选择数据

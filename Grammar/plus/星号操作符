@@ -1,0 +1,17 @@
+# 在python的unpacking中 * 的用法
+
+# 收集剩余元素
+my_list = [1, 2, 3, 4, 5]
+a, *b, c = my_list
+# * 只能出现在赋值语句左侧，且只能有一个，收集到的元素以列表形式存在
+
+# 展开可迭代对象
+def f(a, b ,c):
+    print(a, b, c)
+my_tuple = (1, 2, 3,)
+f(*my_tuple)    # 输出1 2 3
+
+# for dict, ** needed
+my_dict = {'x':1, 'y':2, 'z':3}
+f(**my_dict)    # 输出1 2 3
+new_dict = {**my_dict, 'a':4}   # 合并字典

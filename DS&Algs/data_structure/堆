@@ -1,0 +1,47 @@
+# 堆是一种特殊的完全二叉树结构，分为两种类型：
+# 最小堆：每个节点的值都小于或等于其子节点的值
+# 最大堆：每个节点的值都大于或等于其子节点的值
+
+import heapq
+
+# 创建最小堆
+heap = []
+heapq.heappush(heap, 5)
+heapq.heappush(heap, 3)
+heapq.heappush(heap, 7)
+print(heap)  # [3, 5, 7]
+
+# 弹出最小元素
+min_value = heapq.heappop(heap)  # 返回3
+print(min_value, heap)  # 3 [5, 7]
+
+# 查看最小元素但不弹出
+peek = heap[0]  # 5
+
+# 将列表转换为堆
+nums = [9, 5, 2, 7, 1]
+heapq.heapify(nums)
+print(nums)  # [1, 5, 2, 7, 9]
+
+# 合并多个已排序列表
+sorted_lists = [[1, 3, 5], [2, 4, 6], [0, 7]]
+merged = list(heapq.merge(*sorted_lists))
+print(merged)  # [0, 1, 2, 3, 4, 5, 6, 7]
+
+# 获取最大的n个元素
+largest = heapq.nlargest(3, [10, 3, 8, 4, 2, 9])
+print(largest)  # [10, 9, 8]
+
+# 获取最小的n个元素
+smallest = heapq.nsmallest(3, [10, 3, 8, 4, 2, 9])
+print(smallest)  # [2, 3, 4]
+
+
+# 最大堆实现
+max_heap = []
+heapq.heappush(max_heap, -5)
+heapq.heappush(max_heap, -3)
+heapq.heappush(max_heap, -7)
+
+# 弹出最大元素
+max_value = -heapq.heappop(max_heap)  # 返回7

@@ -1,0 +1,29 @@
+# 双下划线---魔术方法
+
+class Student():
+    def __init__(self, name, age):
+        '''构造方法 初始化行为'''
+        self.name = name
+        self.age = age
+    
+    def __str__(self):
+        '''控制类转化为字符串的行为 通过print语句打印'''
+        return f"姓名：{self.name}  年龄：{self.age}"
+    
+    def __lt__(self, other):
+        '''< and >'''
+        return self.age < other.age
+    
+    def __le__(self, other):
+        '''<= and >='''
+        return self.age <= other.age
+    
+    def __eq__(self, other):
+        '''=='''
+        return self.age == other.age
+    
+
+x = Student('小明', 20)
+y = Student('小刚', 20)
+print(x)
+print(x == y)

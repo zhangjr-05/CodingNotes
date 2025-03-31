@@ -1,0 +1,251 @@
+class TreeNode:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+
+class BinarySearchTree:
+    def __init__(self):
+        self.root = None
+        self.size = 0
+    
+    def __len__(self):
+        return self.size
+    
+    def is_empty(self):
+        return self.size == 0
+    
+    # 插入操作
+    def insert(self, value):
+        """向BST中插入一个值"""
+        if not self.contains(value):  # 避免插入重复值
+            self.root = self._insert_recursive(self.root, value)
+            self.size += 1
+            return True
+        return False
+
+    def _insert_recursive(self, node, value):
+        """递归地执行插入操作"""
+        # 基本情况：到达空位置，创建新节点
+        if node is None:
+            return TreeNode(value)
+        
+        # 递归插入
+        if value < node.value:
+            node.left = self._insert_recursive(node.left, value)
+        elif value > node.value:
+            node.right = self._insert_recursive(node.right, value)
+        # 如果值已存在，这里不做处理
+        
+        return node
+    
+    # 查找操作
+    def contains(self, value):
+        """检查BST中是否包含特定值"""
+        return self._contains_recursive(self.root, value)
+
+    def _contains_recursive(self, node, value):
+        """递归查找值是否存在"""
+        if node is None:
+            return False
+        
+        if value == node.value:
+            return True
+        elif value < node.value:
+            return self._contains_recursive(node.left, value)
+        else:
+            return self._contains_recursive(node.right, value)
+
+    def find_node(self, value):
+        """查找并返回包含特定值的节点"""
+        return self._find_node_recursive(self.root, value)
+
+    def _find_node_recursive(self, node, value):
+        """递归查找节点"""
+        if node is None or node.value == value:
+            return node
+        
+        if value < node.value:
+            return self._find_node_recursive(node.left, value)
+        else:
+            return self._find_node_recursive(node.right, value)
+    
+    # 删除操作
+    def remove(self, value):
+        """从BST中删除一个值"""
+        # 检查值是否存在
+        if not self.contains(value):
+            return False
+        
+        self.root = self._remove_recursive(self.root, value)
+        self.size -= 1
+        return True
+
+    def _remove_recursive(self, node, value):
+        """递归地执行删除操作"""
+        if node is None:
+            return None
+        
+        # 寻找要删除的节点
+        if value < node.value:
+            node.left = self._remove_recursive(node.left, value)
+        elif value > node.value:
+            node.right = self._remove_recursive(node.right, value)
+        else:
+            # 找到了要删除的节点
+            
+            # 情况1: 叶节点
+            if node.left is None and node.right is None:
+                return None
+            
+            # 情况2: 只有一个子节点
+            if node.left is None:
+                return node.right
+            if node.right is None:
+                return node.left
+            
+            # 情况3: 有两个子节点
+            # 找到右子树的最小值（中序后继）
+            successor = self._find_min_node(node.right)
+            # 用后继节点的值替换当前节点
+            node.value = successor.value
+            # 删除后继节点
+            node.right = self._remove_recursive(node.right, successor.value)
+        
+        return node
+    
+    # 遍历操作
+    def inorder_traversal(self):
+        """中序遍历BST (左-根-右)，返回有序列表"""
+        result = []
+        self._inorder_recursive(self.root, result)
+        return result
+
+    def _inorder_recursive(self, node, result):
+        if node is not None:
+            self._inorder_recursive(node.left, result)
+            result.append(node.value)
+            self._inorder_recursive(node.right, result)
+
+    def preorder_traversal(self):
+        """前序遍历BST (根-左-右)"""
+        result = []
+        self._preorder_recursive(self.root, result)
+        return result
+
+    def _preorder_recursive(self, node, result):
+        if node is not None:
+            result.append(node.value)
+            self._preorder_recursive(node.left, result)
+            self._preorder_recursive(node.right, result)
+
+    def postorder_traversal(self):
+        """后序遍历BST (左-右-根)"""
+        result = []
+        self._postorder_recursive(self.root, result)
+        return result
+
+    def _postorder_recursive(self, node, result):
+        if node is not None:
+            self._postorder_recursive(node.left, result)
+            self._postorder_recursive(node.right, result)
+            result.append(node.value)
+    
+    # 工具方法
+    def min_value(self):
+        """找到BST中的最小值"""
+        if self.is_empty():
+            raise ValueError("树为空")
+        
+        return self._find_min_node(self.root).value
+
+    def _find_min_node(self, node):
+        """查找以node为根的子树中的最小值节点"""
+        current = node
+        # 最小值总是在最左边
+        while current.left is not None:
+            current = current.left
+        return current
+
+    def max_value(self):
+        """找到BST中的最大值"""
+        if self.is_empty():
+            raise ValueError("树为空")
+        
+        current = self.root
+        while current.right is not None:
+            current = current.right
+        
+        return current.value
+
+    def height(self):
+        """计算树的高度"""
+        return self._height_recursive(self.root)
+
+    def _height_recursive(self, node):
+        if node is None:
+            return -1  # 空树高度为-1
+        
+        left_height = self._height_recursive(node.left)
+        right_height = self._height_recursive(node.right)
+        
+        return max(left_height, right_height) + 1
+    
+    # 区间查询
+    def range_query(self, low, high):
+        """返回值在[low, high]范围内的所有节点值"""
+        result = []
+        self._range_query_recursive(self.root, low, high, result)
+        return result
+    
+    def _range_query_recursive(self, node, low, high, result):
+        if node is None:
+            return
+        
+        # 如果当前节点值大于low，则需要在左子树中继续搜索
+        if low < node.value:
+            self._range_query_recursive(node.left, low, high, result)
+        
+        # 如果当前节点值在范围内，则添加到结果中
+        if low <= node.value <= high:
+            result.append(node.value)
+        
+        # 如果当前节点值小于high，则需要在右子树中继续搜索
+        if node.value < high:
+            self._range_query_recursive(node.right, low, high, result)
+
+
+# 使用示例
+if __name__ == "__main__":
+    bst = BinarySearchTree()
+    
+    # 插入一些值
+    values = [50, 30, 70, 20, 40, 60, 80, 15, 25, 35, 45, 55, 65, 75, 85]
+    for val in values:
+        bst.insert(val)
+    
+    print(f"BST大小: {len(bst)}")
+    print(f"BST高度: {bst.height()}")
+    
+    # 遍历
+    print("中序遍历 (排序结果):", bst.inorder_traversal())
+    print("前序遍历:", bst.preorder_traversal())
+    print("后序遍历:", bst.postorder_traversal())
+    
+    # 查找
+    test_value = 40
+    print(f"{test_value}是否在树中: {bst.contains(test_value)}")
+    print(f"最小值: {bst.min_value()}")
+    print(f"最大值: {bst.max_value()}")
+    
+    # 区间查询
+    low, high = 35, 65
+    print(f"值在[{low}, {high}]范围内的节点: {bst.range_query(low, high)}")
+    
+    # 删除测试
+    values_to_delete = [20, 30, 50]
+    for val in values_to_delete:
+        print(f"删除 {val}: {bst.remove(val)}")
+    
+    print("删除后的BST大小:", len(bst))
+    print("删除后的中序遍历:", bst.inorder_traversal())

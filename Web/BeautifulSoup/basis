@@ -1,0 +1,13 @@
+from bs4 import BeautifulSoup
+import requests
+
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0'}
+
+url = 'https://cn.bing.com/'
+response = requests.get(url, headers=headers)
+response.encoding = 'utf-8'
+
+soup = BeautifulSoup(response.text, 'lxml') # 使用lxml解析器
+
+# 解析网络内容用html.parser解析器
+soup = BeautifulSoup(response.text, 'html.parser')

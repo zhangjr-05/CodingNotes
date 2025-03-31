@@ -1,0 +1,28 @@
+def valid(m, n):
+    for x, y in memo:
+        if n == y or m + n == x + y or m - n == x - y:
+            return False
+    return True
+
+def dfs(i):
+    if i == N:
+        ans.append(memo[:])
+        return
+
+    for j in range(N):
+        if valid(i, j):
+            memo.append((i, j))
+            dfs(i + 1)
+            memo.pop()
+    
+N = int(input().strip())
+memo = []
+ans = []
+
+dfs(0)
+
+if ans:
+    for i in ans:
+        print(i)
+else:
+    print("No solution")

@@ -1,0 +1,47 @@
+# 迭代器
+class MyIterator:
+    def __init__(self, data):
+        self.data = data
+        self.index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index < len(self.data):
+            result = self.data[self.index]
+            self.index += 1
+            return result
+        else:
+            raise StopIteration
+
+# Example usage
+my_data = [1, 2, 3, 4, 5]
+my_iterator = MyIterator(my_data)
+
+for item in my_iterator:
+    print(item)
+
+
+# 生成器
+def my_generator(data):
+    for item in data:
+        yield item
+# Example usage
+my_data = [1, 2, 3, 4, 5]
+for item in my_generator(my_data):
+    print(item)
+
+import sys
+def fb(n):
+    a, b, c = 1, 1, 0
+    while c <= n:
+        yield a
+        a, b = b, a + b
+        c += 1
+f = fb(10)
+while True:
+    try:
+        print(next(f))
+    except StopIteration:
+        sys.exit()

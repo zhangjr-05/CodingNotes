@@ -1,0 +1,52 @@
+class TreeNode:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+    
+root = TreeNode(1)
+root.left = TreeNode(2)
+root.right = TreeNode(3)
+
+
+
+
+# 二叉树的遍历方式
+
+# 前序遍历 (根-左-右)
+def preorder_traversal(node: TreeNode):
+    if node is None:
+        return
+    print(node.value, end=' ')      # 访问根节点
+    preorder_traversal(node.left)   # 遍历左子树
+    preorder_traversal(node.right)  # 遍历右子树
+
+# 中序遍历 (左-根-右)
+def inorder_traversal(node: TreeNode):
+    if node is None:
+        return
+    inorder_traversal(node.left)    # 遍历左子树
+    print(node.value, end=' ')      # 访问根节点
+    inorder_traversal(node.right)   # 遍历右子树
+
+# 后序遍历 (左-右-根)
+def postorder_traversal(node: TreeNode):
+    if node is None:
+        return
+    postorder_traversal(node.left)  # 遍历左子树
+    postorder_traversal(node.right) # 遍历右子树
+    print(node.value, end=' ')      # 访问根节点
+
+# 层序遍历 (按层从上到下从左到右)
+from collections import deque   # 队列
+def level_order_traversal(root: TreeNode):
+    if not root:
+        return
+    queue = deque([root])
+    while queue:
+        node = deque.popleft()
+        print(node.value, end=' ')
+        if node.left:
+            queue.append(node.left)
+        if node.right:
+            queue.append(node.right)

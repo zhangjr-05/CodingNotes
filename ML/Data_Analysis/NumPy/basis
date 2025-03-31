@@ -1,0 +1,109 @@
+# NumPy是Python中用于科学计算的基础库，它提供了高性能的多维数组对象以及相关工具。
+import numpy as np
+
+# 数组属性
+a = np.array([[1, 2, 3], [4, 5, 6]])
+a.ndim  # 数组的维数
+a.shape  # 数组的形状
+a.size  # 数组的元素个数
+a.dtype  # 数组的元素类型
+
+# 创建数组
+np.array([1, 2, 3]) # 从列表创建数组
+np.zeros(shape=(2, 3))    # 创建元素全为0的数组
+np.ones((2, 3), dtype=int)  # 创建元素全为1的数组
+np.full((2, 3), 7)  # 创建元素全为7的数组
+np.empty((2, 3))    # 创建空数组
+np.eye(2)   # 创建2x2的单位矩阵
+np.arange(4)    # 创建0到3的数组
+np.arange(0, 10, 2) # 创建0到9的数组，步长为2
+np.linspace(0, 10, 5)   # 创建0到10的数组，共5个元素
+np.random.random((3, 4))    # 创建随机数组
+np.random.rand(3, 4)
+np.random.randint(2, 5, (3, 4)) # 生成shape=(3, 4)的随机数组，value为[2, 5)中的随机整数
+
+
+# 数组索引
+a = np.array([[1, 2, 3], [4, 5, 6]])
+a[0, 0] # 获取第一个元素
+a[0, :] # 获取第一行
+a[:, 0] # 获取第一列
+a[0, 0] = 7    # 修改元素
+# 数组切片
+a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+a[:2, 1:]   # 获取前两行，第二列及以后的元素
+a[1:, :2]   # 获取第二行及以后的元素，前两列
+a[1, :2]    # 获取第二行，前两列
+a[1:2, :2]  # 获取第二行，前两列
+
+# 筛选
+a[a >= 5]   # 选择大于等于5的数
+
+# 数组运算
+a = np.array([[1, 2], [3, 4]])
+b = np.array([[5, 6], [7, 8]])
+np.add(a, b)    # 加法
+np.subtract(a, b)   # 减法
+np.multiply(a, b)   # 乘法
+np.divide(a, b) # 除法
+
+np.sqrt(a)  # 开方
+np.dot(a, b)    # 矩阵乘法(***)
+np.sum(a)   # 求和
+np.sum(a, axis=0)   # 按列求和
+np.sum(a, axis=1)   # 按行求和
+np.mean(a)  # 求平均值
+np.mean(a, axis=0)  # 按列求平均值
+np.mean(a, axis=1)  # 按行求平均值
+np.std(a)   # 求标准差
+np.std(a, axis=0)   # 按列求标准差
+np.std(a, axis=1)   # 按行求标准差
+np.exp(a)   # 求指数(e的x次方)
+np.log(a)   # 求对数(lnx)
+np.abs(a)   # 求绝对值
+np.power(a, 2)  # 求幂(x**2)
+np.argmax(a)    # 求最大值的索引
+np.argmin(a)    # 求最小值的索引
+np.clip(a, 2, 3)    # 将小于2的元素设为2，大于3的元素设为3
+
+# 添加/删除元素
+a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+b = np.array([[10, 11, 12]])
+np.append(a, b, axis=0) # 添加行
+np.append(a, b.T, axis=1)   # 添加列
+np.insert(a, 1, 10, axis=0) # 在第二行插入元素，一行10
+np.delete(a, 1, axis=0) # 删除第二行
+
+# 排序
+a = np.array([[3, 2, 1], [6, 5, 4]])
+np.sort(a)  # 对每一行进行排序
+np.sort(a, axis=0)  # 对每一列进行排序
+np.argsort(a)   # 对每一行进行排序并返回索引构成的数组
+np.argsort(a, axis=0)   # 对每一列进行排序并返回索引构成的数组
+
+# 反转
+np.flip(a)  # 全反转
+np.flip(a, axis=0)  # 反转行
+a[1] = np.flip(a[1])    # 反转第二行
+a[:, 1] = np.flip(a[:, 1])  # 反转第二列
+
+# 重塑数组
+a.transpose()   # 转置
+a.T     # 转置
+a = np.arange(6)
+a.reshape(2, 3)     # 重塑
+np.vstack((a, b))   # 垂直堆叠 即合并
+np.hstack((a, b))   # 水平堆叠
+
+# 升维，添加新轴
+a = np.array([1, 2, 3, 4, 5, 6])
+x = a[np.newaxis, :]   # axis = 0
+y = a[:, np.newaxis]   # axis = 1
+a = np.expand_dims(a, axis=1)   # 指定位置
+
+# 保存和加载NumPy对象
+np.save('filename', a)  # 保存为'filename.npy'
+b = np.load('filename.npy') # 重建数组
+csv_arr = np.arange(6)
+np.savetxt('file.csv', csv_arr)
+np.loadtxt('file.csv')

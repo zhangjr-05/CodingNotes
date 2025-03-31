@@ -1,0 +1,42 @@
+from collections import {
+    defaultdict,
+    Counter,
+    deque,
+    namedtuple,
+    OrderedDict
+}
+
+Counter
+# 统计可哈希对象出现的次数
+# 两个Counter对象可进行比较
+
+
+
+deque
+# 双端队列
+d = deque(maxlen=3) # 限制队列长度
+d = deque([1, 2, 3])
+d.extend()
+d.extendleft()
+d.append()
+d.appendleft()
+d.pop()
+d.popleft()
+
+
+
+defaultdict
+# keyerror不会报错的字典
+dd = defaultdict(int)   # 指定类型，默认值为int0
+dd = defaultdict(list)  # 空list
+
+
+
+
+OrderedDict
+# 有序字典
+
+
+
+namedtuple
+# 具名元组

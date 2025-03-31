@@ -1,0 +1,162 @@
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader, Dataset
+import numpy as np
+
+# 基础持续学习模型
+class ContinualLearner(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(ContinualLearner, self).__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.fc2 = nn.Linear(hidden_size, output_size)
+        self.regularization_terms = []  # 用于存储正则化项
+
+    def forward(self, x):
+        x = torch.relu(self.fc1(x))
+        return self.fc2(x)
+
+# 持续学习训练器
+class CLTrainer:
+    def __init__(self, model, device, ewc_lambda=5000, replay_buffer_size=100):
+        self.model = model.to(device)
+        self.device = device
+        self.ewc_lambda = ewc_lambda  # EWC正则化强度
+        self.replay_buffer = []
+        self.replay_buffer_size = replay_buffer_size
+        
+        # 存储旧任务的重要参数
+        self.registered_parameters = None
+        self.fisher_matrix = None
+
+    # 计算Fisher信息矩阵（用于EWC）
+    def compute_fisher(self, dataset, num_samples=200):
+        fisher = {}
+        params = {n: p for n, p in self.model.named_parameters() if p.requires_grad}
+        
+        for n, p in params.items():
+            p.data.zero_()
+            fisher[n] = torch.zeros_like(p.data)
+            
+        self.model.eval()
+        indices = np.random.choice(len(dataset), num_samples, replace=False)
+        for i in indices:
+            data, target = dataset[i]
+            data, target = data.to(self.device), torch.tensor([target]).to(self.device)
+            self.model.zero_grad()
+            output = self.model(data.unsqueeze(0))
+            loss = nn.functional.cross_entropy(output, target)
+            loss.backward()
+            
+            for n, p in params.items():
+                if p.grad is not None:
+                    fisher[n] += p.grad.data ** 2 / num_samples
+                    
+        self.fisher_matrix = fisher
+        self.registered_parameters = {n: p.clone().detach() for n, p in params.items()}
+
+    # EWC正则化项
+    def ewc_regularization(self):
+        if not self.registered_parameters:
+            return 0
+        
+        loss = 0
+        for n, p in self.model.named_parameters():
+            if n in self.registered_parameters:
+                loss += (self.fisher_matrix[n] * 
+                        (p - self.registered_parameters[n]) ** 2).sum()
+        return self.ewc_lambda * loss
+
+    # 更新回放缓冲区
+    def update_replay_buffer(self, dataset):
+        indices = np.random.choice(len(dataset), 
+                                 min(self.replay_buffer_size, len(dataset)),
+                                 replace=False)
+        self.replay_buffer.extend([dataset[i] for i in indices])
+        if len(self.replay_buffer) > self.replay_buffer_size:
+            self.replay_buffer = self.replay_buffer[-self.replay_buffer_size:]
+
+    # 训练单个任务
+    def train_task(self, train_loader, num_epochs=10, use_ewc=True, use_replay=True):
+        optimizer = optim.Adam(self.model.parameters())
+        
+        for epoch in range(num_epochs):
+            self.model.train()
+            total_loss = 0
+            
+            # 添加回放数据
+            if use_replay and self.replay_buffer:
+                replay_loader = DataLoader(self.replay_buffer, 
+                                          batch_size=train_loader.batch_size,
+                                          shuffle=True)
+                combined_loader = itertools.chain(train_loader, replay_loader)
+            else:
+                combined_loader = train_loader
+            
+            for data, targets in combined_loader:
+                data, targets = data.to(self.device), targets.to(self.device)
+                optimizer.zero_grad()
+                outputs = self.model(data)
+                loss = nn.functional.cross_entropy(outputs, targets)
+                
+                if use_ewc:
+                    loss += self.ewc_regularization()
+                
+                loss.backward()
+                optimizer.step()
+                total_loss += loss.item()
+                
+            print(f"Epoch {epoch+1}/{num_epochs}, Loss: {total_loss/len(train_loader):.4f}")
+
+    # 评估模型
+    def evaluate(self, test_loaders):
+        self.model.eval()
+        accuracies = {}
+        with torch.no_grad():
+            for task_id, loader in test_loaders.items():
+                correct = 0
+                total = 0
+                for data, targets in loader:
+                    data, targets = data.to(self.device), targets.to(self.device)
+                    outputs = self.model(data)
+                    _, predicted = torch.max(outputs.data, 1)
+                    total += targets.size(0)
+                    correct += (predicted == targets).sum().item()
+                accuracies[task_id] = 100 * correct / total
+        return accuracies
+
+# 示例用法
+if __name__ == "__main__":
+    # 参数配置
+    input_size = 784  # MNIST示例
+    hidden_size = 256
+    output_size = 10
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
+    # 初始化模型和训练器
+    model = ContinualLearner(input_size, hidden_size, output_size)
+    trainer = CLTrainer(model, device, ewc_lambda=5000, replay_buffer_size=500)
+    
+    # 模拟多个任务（示例需要实际数据集）
+    tasks = [task1_loader, task2_loader, task3_loader]  
+    
+    # 持续学习过程
+    test_loaders = {}
+    for task_id, train_loader in enumerate(tasks):
+        print(f"Training Task {task_id+1}")
+        
+        # 1. 计算当前任务的Fisher信息（EWC需要）
+        trainer.compute_fisher(train_loader.dataset)
+        
+        # 2. 训练当前任务
+        trainer.train_task(train_loader, use_ewc=True, use_replay=True)
+        
+        # 3. 更新回放缓冲区
+        trainer.update_replay_buffer(train_loader.dataset)
+        
+        # 4. 保存当前测试集
+        test_loaders[task_id] = current_test_loader
+    
+    # 最终评估所有任务
+    accuracies = trainer.evaluate(test_loaders)
+    print("Task Accuracies:", accuracies)

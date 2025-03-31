@@ -1,0 +1,28 @@
+def merge_sort(arr: list[int]):
+    '''
+    时间复杂度: O(n log n)
+    空间复杂度: O(n)
+    稳定性：稳定
+    '''
+    if len(arr) <= 1:
+        return arr
+    mid = len(arr) // 2
+    left_half = merge_sort(arr[:mid])
+    right_half = merge_sort(arr[mid:])
+    return merge(left_half, right_half)
+
+def merge(left: list[int], right: list[int]):
+    '''合并两个已排序的数组'''
+    res = []
+    i = j = 0
+    m, n = len(left), len(right)
+    while i < m and j < n:
+        if left[i] <= right[j]:
+            res.append(left[i])
+            i += 1
+        else:
+            res.append(right[j])
+            j += 1
+    res.extend(left[i:])
+    res.extend(right[j:])
+    return res

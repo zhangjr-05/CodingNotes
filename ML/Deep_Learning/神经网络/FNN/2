@@ -1,0 +1,50 @@
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import matplotlib.pyplot as plt
+
+# 生成一些随机数据
+n_samples = 1000
+data = torch.randn(n_samples, 2)    # 生成1000个二维数据点
+labels = (data[:, 0]**2 + data[:, 1]**2 < 1).float().unsqueeze(1)   # 点在圆内为1，圆外为0
+
+# # 可视化
+# plt.scatter(data[:, 0], data[:, 1], c=labels.squeeze(1), cmap='coolwarm')
+# plt.title("Generated Data")
+# plt.xlabel('Feature 1')
+# plt.ylabel('Feature 2')
+# plt.show()
+
+# 定义前馈神经网络
+class NN(nn.Module):
+    def __init__(self):
+        super(NN, self).__init__()
+        # 定义神经网络的层
+        self.fc1 = nn.Linear(2, 10)
+        self.fc2 = nn.Linear(10, 1)
+        self.sigmoid = nn.Sigmoid() # 二分类激活函数
+
+    def forward(self, x):
+        x = torch.relu(self.fc1(x)) # 使用ReLU激活函数
+        return self.sigmoid(self.fc2(x))   # 使用Sigmoid函数
+    
+# 实例化模型
+model = NN()
+
+# 定义损失函数和优化器
+criterion = nn.BCELoss()    # 二元交叉熵损失
+optimizer = optim.SGD(model.parameters(), lr=0.5)   # 使用随机梯度下降优化器
+
+# 训练模型
+epochs = 1000
+for epoch in range(epochs):
+    # 前向传播
+    outputs = model(data)
+    loss = criterion(outputs, labels)   # 计算损失
+
+    # 反向传播
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    print(f'Epoch: {epoch + 1}  loss: {loss.item():.4f}')

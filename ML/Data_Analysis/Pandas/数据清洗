@@ -1,0 +1,17 @@
+import pandas as pd
+
+df = pd.read_csv('d:/mypython/files/salaries.csv', sep=',', header=0, names=['姓名', '年龄', '工作', '薪水'])
+
+# 清洗空值
+df.dropna(axis=0, how='any', thresh=None, subset=None, inplace=False)
+# 删除包含空字段的行    thresh:最少需要的非空值数据   subset:设置要检查的列
+# how='any'(只要有NaN就删除) or 'all'(都是NaN才删除)    inplace=True修改源数据并返回None
+missing_values = ['na', '--', 'n/a']    # 指定空数据类型
+df = pd.read_csv('.csv', na_values=missing_values)
+
+# 填补缺失值
+df.fillna(25, inplace=True)
+df['年龄'].fillna(25)   # 指定列替换NaN
+
+# 清洗重复数据
+df.drop_duplicates(inplace=True)

@@ -1,0 +1,51 @@
+import torch
+import numpy as np
+import pandas as pd
+
+# 张量创建
+size = (2, 3)
+data = [[i + 4 * j for i in range(1, 5)] for j in range(3)]
+a = np.array([1, 2, 3, 4])
+torch.tensor(data)  # from list or ndarray
+torch.from_numpy(a) # from ndarray
+torch.zero(size)    # all zero
+torch.ones(size)    # all ones
+torch.empty(size)   # uninitialized
+torch.eye(size)     # 单位矩阵 E
+torch.rand(size)    # 服从[0, 1)均匀分布的随机张量
+torch.arange(start=0, end=10, step=2)   # like range
+torch.linspace(start=0, end=10, steps=5)    # 等间隔
+
+# 张量属性
+t = torch.tensor(data)
+t.shape
+t.size()
+t.dtype
+t.device
+t.dim()
+t.requires_grad_
+t.numel # 元素总数
+t.is_cuda
+t.T # 转置
+t.t()
+t.item()    # 获取单元素张量的值
+
+# 张量操作
+t1 = torch.tensor(data)
+t2 = t1.T.reshape(size)
+# +, -, *, /    元素之间+-*/
+torch.matmul(t1, t2)    # 矩阵乘法
+torch.dot()     # 一维tensor的点乘
+torch.sum()
+torch.mean()
+torch.max()
+torch.min()
+t.reshape(shape=size)   # change shape
+t.unsqueeze(dim=0)  # 添加指定维度
+t.squeeze(dim=0)    # 去掉指定维度
+torch.cat((t1, t2), dim=1)  # 按照指定维度合并tensor
+
+# tensor的GPU加速
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+t = torch.tensor(data, device=device)
+t = t.to(device)

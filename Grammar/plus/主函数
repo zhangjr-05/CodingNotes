@@ -1,0 +1,4 @@
+# 用于限定只在本文件中执行
+
+if __name__ == '__main__':
+    print('Hello, world!')

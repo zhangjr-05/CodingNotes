@@ -1,0 +1,12 @@
+# 绘制矩形
+pygame.draw.rect()  (screen, color, (x, y, width, height))
+
+# 绘制圆形
+pygame.draw.circle()    (screen, color, (x, y), r)
+
+# 绘制直线
+pygame.draw.circle()    (screen, color, (x, y), (x, y), width)
+
+# 绘制多边形
+points = [(x, y), (x, y), (x, y)]   点列
+pygame.draw.polygon()   (screen, color, points)

@@ -1,0 +1,7 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.edge.service import Service
+
+# chrome位置
+
+# edge位置

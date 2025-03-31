@@ -1,0 +1,15 @@
+def selection_sort(arr: list[int]):
+    '''
+    时间复杂度: O(n²)
+    空间复杂度: O(1)
+    稳定性: 不稳定
+    '''
+    n = len(arr)
+    for i in range(n - 1):
+        min_idx = i
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        if min_idx != i:
+            arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    return arr

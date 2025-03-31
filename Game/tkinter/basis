@@ -1,6 +1,0 @@
-import tkinter as tk
-
-window = tk.Tk()
-window.title('主窗口')
-window.geometry('800x600')
-window.mainloop()

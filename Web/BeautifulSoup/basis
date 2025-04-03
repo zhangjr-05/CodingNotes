@@ -1,13 +1,109 @@
-from bs4 import BeautifulSoup
+# BeautifulSoup 是 Python 中用于解析 HTML 和 XML 的强大库，它能够帮助我们从网页中提取数据、导航文档树、修改文档结构。
+
+import re
 import requests
+from bs4 import BeautifulSoup
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0'}
 
-url = 'https://cn.bing.com/'
+url = 'https://github.com/zhangjr05/Projects'
 response = requests.get(url, headers=headers)
-response.encoding = 'utf-8'
+response.encoding = 'utf-8' # 确保正确编码
 
-soup = BeautifulSoup(response.text, 'lxml') # 使用lxml解析器
 
-# 解析网络内容用html.parser解析器
-soup = BeautifulSoup(response.text, 'html.parser')
+# 创建 BeautifulSoup 对象 -- 将 html 字符串转为 BeautifulSoup 对象
+
+soup = BeautifulSoup(response.text, 'lxml') # 使用lxml解析器 非常快 容错能力高
+
+
+# **********基本元素选择方法**********
+
+# 直接访问标签
+
+title = soup.title  # 获取标题
+title   # <title>Projects of zhangjr05</title>
+title.string    # Projects of zhangjr05
+
+p = soup.p
+p   # <p class="intro">这是一个很好的库</p>
+
+
+# 使用 find 和 find_all 方法
+
+# 查找第一个匹配的元素
+first_a = soup.find('a')
+first_a  # <a href="https://github.com/zhangjr05/Projects">click here</a>
+first_a.get('href') # 获取 href 属性的值
+
+# 查找所有匹配的元素
+all_links = soup.find_all('a')
+for link in all_links:
+    link.get('href')    # 获取所有 a 元素的 href 属性值
+
+# 按属性查找
+intro_p = soup.find('p', class_='intro') # <p class="intro">这是一个很好的库</p>
+intro_p.text    # 这是一个很好的库
+
+# 使用多个条件
+result = soup.find_all('div', attrs={'id': 'content', 'class': 'main'})
+
+
+# CSS 选择器 (select)
+# soup.select() 返回所有符合条件的元素组成的 list
+links = soup.select('a')
+intro = soup.select('p.intro') # 选择 class 为 intro 的 p 元素
+header = soup.select('div#header') # 选择 ID 为 header 的 div 元素
+items = soup.select('ul.menu > li') # 子元素选择
+
+
+
+# 导航文档树
+
+# 获取父节点
+parent = soup.a.parent
+parents = soup.a.parents
+
+# 获取子节点
+children = soup.body.children
+
+# 兄弟节点
+next_sibling = soup.p.next_sibling # 下一个兄弟节点
+prev_sibling = soup.p.previous_sibling # 上一个兄弟节点
+siblings = soup.p.next_siblings # 所有兄弟节点
+
+
+# 获取内容和属性
+
+text = soup.p.text # 获取文本内容
+
+all_text = soup.get_text() # 获取标签内所有文本 包括子标签
+
+href = soup.a['href'] # 获取属性值
+href = soup.a.get('href')
+attrs = soup.a.attrs # 获取所有属性 返回字典
+
+soup.p.has_attr('class') # 检查是否存在某个属性
+
+
+# 修改文档
+# **********
+
+
+# 高级技巧
+
+
+# 正则表达式
+
+p_zhangjr = soup.find_all('p', string=re.compile('zhagjr')) # 查找所有包含 'zhangjr' 的 p 元素
+
+http_links = soup.find_all('a', href=re.compile('^http')) # 查找所有以 http 开头的链接
+
+# 自定义过滤函数
+
+long_paragraphs = soup.find_all('p', string=lambda text: text and len(text) > 50) # 查找所有长度大于 50 个字符的段落
+
+has_multiple_classes = soup.find_all(lambda tag: tag.has_attr('class') and len(tag.get('class')) > 1) # 查找所有包含特定类的元素
+
+# 递归限制
+# 只搜索直接子元素，不递归搜索
+direct_divs = soup.find_all('div', recursive=False)
